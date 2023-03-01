@@ -14,8 +14,7 @@ from search import *
 #################
 class TowerSorting(Problem):
 
-    # ------------------------------  ici je pense qu'il faut optimiser un peu --------------------------------------------------#
-    
+    # --------------------                  actions                                   -------------------------- #
 
     def actions(self, state):
         for i in range(state.number):
@@ -23,69 +22,28 @@ class TowerSorting(Problem):
                 if(i != j):  
                     if(len(state.grid[j]) == 0 or len(state.grid[j])<state.size):
                         yield(i,j)
-
     
 
 
-
-
-    """
-    def actions(self, state):
-        tab = []
-        for i in range(state.number):
-            for j in range(state.number):
-                if i != j:
-                    if len(state.grid[j])<state.size:
-                        tab.append((i,j))
-        return tab
-    """
-
-
-    # --------------------  la fonction de recherche se charge elle meme de passer d'une action à une autre -------------------------- #
+    # --------------------                  result                                    -------------------------- #
     
 
     def result(self, state, action):
-        i,j = action 
+        towerA,towerB = action 
         new_grid = deepcopy(state.grid)
-        disk = new_grid[i].pop()
-        new_grid[j].append(disk) 
-        return State(state.number, state.size, new_grid, f"tower {i} to tower {j}")
+        new_grid[towerB].append(new_grid[towerA].pop())
+        return State(state.number, state.size, new_grid, f"Tower {towerA} to Tower {towerB}")
     
-    # ----------------------------       gooooooaaallllllll -----------------------------------------------------------------------------#
 
-    """
-        
+    
+    # ----------------------------       goal_test  -------------------------------------------------------------#
+    
     def goal_test(self, state):
         for i in range(state.number):
-            if(len(state.grid[i]) != state.size or len(set(state.grid[i])) != 1):
+            if(len(state.grid[i])!=0 and (len(state.grid[i]) != state.size or len(set(state.grid[i])) != 1) ):
                 return False
         return True
-    """
-
-    
-    def goal_test(self, state):
-        second = False
-        for row in state.grid:
-            length = len(row)
-            # if their is more than one tower with less than SIZE token
-            # to understand this, take the simple case 3 towers 3 tokens (2 colors), 
-            # if their is two towers with 2 tokens or less it's enough to conclude a NO GOAL 
-            if length != state.size:
-                if second: 
-                    return False
-                else:
-                    second = True
-                    continue
-            # avoid empty row because state.size != 0
-            # compare only full row, because you need full rows to complete the game
-            else: 
-                # compare elem in a same row to the first, if one differe, we reject
-                first = row[0]
-                for i in range(1, length):
-                    if row[i] != first:
-                        return False
-        return True 
-    
+      
 
 ###############
 # State class #
@@ -109,10 +67,6 @@ class State:
             s += "\n"
         return s
 
-    """"
-    def __eq__(self, other):
-        return self.grid == other.grid
-    """
 
     def __eq__(self, other):
         return hash(self) == hash(other)
